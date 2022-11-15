@@ -4,6 +4,7 @@ parameters:
   install_ffi:
     type: boolean
     description: Is install ffi.
+    default: true
 steps:
   - checkout
   # - when:
