@@ -1,13 +1,25 @@
-description: >
-  Sample example description.
-# Provide a use-case based example for using this orb.
-# Everything in the `usage` section will be displayed in the orb registry.
-# Comments are not retained.
+description: "Run go test ./... with additional (optional) parameters"
+
 usage:
   version: 2.1
+
   orbs:
-    <orb-name>: <namespace>/<orb-name>@1.2.3
+    go: venus/go-pkg-test@1.0
+
+  jobs:
+    test_all:
+      executor:
+        name: go/default
+        tag: "cimg/go:1.18.1"
+      steps:
+        - go/setup_env:
+            install_ffi: true
+        - go/test:
+            display-name: test_name
+            suite: "test_name"
+            target: "./pkg_path/..."
+
   workflows:
-    use-my-orb:
+    ci:
       jobs:
-        - <orb-name>/<job-name>
+        test_all

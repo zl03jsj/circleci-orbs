@@ -1,0 +1,55 @@
+description: >
+  Runs 'go test ./<target>/...'  with gotestsum, and upload test result.
+parameters:
+  target:
+    type: string
+    description: Import paths of packages to be tested.
+  coverage:
+    type: string
+    default: -coverprofile=coverage.txt -coverpkg=./...
+    description: Coverage flag. Set to the empty string to disable.
+  go-test-flags:
+    type: string
+    default: "-timeout 30m"
+    description: Flags passed to go test.
+  suite:
+    type: string
+    default: unit
+    description: Test suite name to report to CircleCI.
+  gotestsum-format:
+    type: string
+    default: standard-verbose
+    description: gotestsum format. https://github.com/gotestyourself/gotestsum#format
+  codecov-upload:
+    type: boolean
+    default: false
+    description: |
+      Upload coverage report to https://codecov.io/. Requires the codecov API token to be
+      set as an environment variable for private projects.
+  display-name:
+    type: string
+    default: unit test
+steps:
+  - run:
+      name: << parameters.display-name >>
+      command: |
+        mkdir -p /tmp/test-reports/<< parameters.suite >>
+        mkdir -p /tmp/test-artifacts
+        gotestsum \
+          --format << parameters.gotestsum-format >> \
+          --junitfile /tmp/test-reports/<< parameters.suite >>/junit.xml \
+          --jsonfile /tmp/test-artifacts/<< parameters.suite >>.json \
+          -- \
+          << parameters.coverage >> \
+          << parameters.go-test-flags >> \
+          << parameters.target >>
+      no_output_timeout: 30m
+  - store_artifacts:
+      path: /tmp/test-artifacts/<< parameters.suite >>.json
+  - when:
+      condition: << parameters.codecov-upload >>
+      steps:
+        - run:
+            shell: /bin/bash -eo pipefail
+            command: |
+              bash <(curl -s https://codecov.io/bash)
