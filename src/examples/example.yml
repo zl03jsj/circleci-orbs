@@ -22,4 +22,4 @@ usage:
   workflows:
     ci:
       jobs:
-        test_all
+        - test_all

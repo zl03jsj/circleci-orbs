@@ -32,17 +32,13 @@ parameters:
 steps:
   - run:
       name: << parameters.display-name >>
-      command: |
-        mkdir -p /tmp/test-reports/<< parameters.suite >>
-        mkdir -p /tmp/test-artifacts
-        gotestsum \
-          --format << parameters.gotestsum-format >> \
-          --junitfile /tmp/test-reports/<< parameters.suite >>/junit.xml \
-          --jsonfile /tmp/test-artifacts/<< parameters.suite >>.json \
-          -- \
-          << parameters.coverage >> \
-          << parameters.go-test-flags >> \
-          << parameters.target >>
+      environment:
+        SUITE : "<<parameters.suite>>"
+        TEST_FMT : "<<parameters.gotestsum-format>>"
+        TEST_COVERAGE : "<<parameters.coverage>>"
+        TEST_FLAGS : "<<parameters.go-test-flags>>"
+        TARGET : "<<parameters.target>>"
+      command: <<include(scripts/test.sh)>>
       no_output_timeout: 30m
   - store_artifacts:
       path: /tmp/test-artifacts/<< parameters.suite >>.json

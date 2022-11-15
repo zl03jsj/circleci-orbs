@@ -4,18 +4,18 @@ parameters:
   install_ffi:
     type: boolean
     description: Is install ffi.
-  steps:
-    - checkout
-    - when:
-      condition: << parameters.install_ffi >>
-      setps:
-        - run: sudo apt install ocl-icd-opencl-dev libhwloc-dev
-    - run: |
-          git submodule sync
-          git submodule update --init --recursive
-          go mod tidy
-          sudo apt-get update
-          sudo apt install python-is-python3 ocl-icd-opencl-dev libhwloc-dev
-          make deps
-          echo '-->>>' branch:$(git symbolic-ref --short HEAD), commit:$(git describe --always --match=NeVeRmAtCh --dirty) '\<<<--'
+steps:
+  - checkout
+  # - when:
+    # condition: << parameters.install_ffi >>
+    # setps:
+      # - run:
+        # shell: /bin/bash -eo pipefail
+        # command: |
+          # sudo apt install ocl-icd-opencl-dev libhwloc-dev
+  - run:
+      name: build
+      environment:
+        INSTALL_FFI: "<<parameters.install_ffi>>"
+      command: <<include(scripts/setup.sh)>>
 
