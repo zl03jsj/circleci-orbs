@@ -4,13 +4,17 @@ parameters:
   target:
     type: string
     description: Import paths of packages to be tested.
-  coverage:
+  coverage-file:
     type: string
-    default: -coverprofile=coverage.txt -coverpkg=./...
+    default: -coverprofile=coverage.txt
+    description: Coverage flag. Set to the empty string to disable.
+  coverage-pkg:
+    type: string
+    default: -coverpkg=./...
     description: Coverage flag. Set to the empty string to disable.
   go-test-flags:
     type: string
-    default: "-timeout 30m"
+    default: -timeout=30m
     description: Flags passed to go test.
   suite:
     type: string
@@ -35,7 +39,8 @@ steps:
       environment:
         SUITE : "<<parameters.suite>>"
         TEST_FMT : "<<parameters.gotestsum-format>>"
-        TEST_COVERAGE : "<<parameters.coverage>>"
+        TEST_COVERAGE_FILE : "<<parameters.coverage-file>>"
+        TEST_COVERAGE_PKG : "<<parameters.coverage-pkg>>"
         TEST_FLAGS : "<<parameters.go-test-flags>>"
         TARGET : "<<parameters.target>>"
       command: <<include(scripts/test.sh)>>
