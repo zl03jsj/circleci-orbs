@@ -11,13 +11,17 @@ jobs:
   # Create a job to test the commands of your orbs.
   # You may want to add additional validation steps to ensure the commands are working as expected.
   command-tests:
-    docker:
-      - image: cimg/base:current
+    executor:
+      name: go-pkg-test/default
+      tag: "cimg/go:1.18.1"
     steps:
-      - checkout
       # Run your orb's commands to validate them.
-      - go-pkg-test/setup_env
-      - go-pkg-test/test
+      - go-pkg-test/setup_env:
+          install_ffi: true
+      - go-pkg-test/test:
+          display-name: example_test_name
+          suite: example_test_name
+          target: ./
 workflows:
   test-deploy:
     jobs:
